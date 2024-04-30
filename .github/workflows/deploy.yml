@@ -1,0 +1,22 @@
+name: CI/CD Pipeline
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build-and-push-docker-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build Docker image
+        run: docker build -t lutfar1996/flask-app:${{ github.event.release.tag_name }} .
+
+      - name: Push Docker image to Docker Hub
+        run: docker push lutfar1996/flask-app:${{ github.event.release.tag_name }}
